@@ -1,0 +1,21 @@
+node_modules
+dist
+build
+out
+.next
+.turbo
+coverage
+pnpm-lock.yaml
+*.tsbuildinfo
+next-env.d.ts
+CHANGELOG.md
+backend/prisma/migrations
+
+# Hand-authored content directories (prose, research, assets) — not code.
+docs
+research
+legal
+branding
+assets
+prompts
+figma

@@ -1,0 +1,17 @@
+**/node_modules
+**/.next
+**/dist
+**/.turbo
+**/coverage
+**/.git
+**/.github
+**/*.log
+**/.env
+**/.env.*
+!**/.env.example
+docs
+research
+branding
+assets
+figma
+**/*.md

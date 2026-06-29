@@ -1,0 +1,66 @@
+# Local development infrastructure for FWorld.
+# Brings up the stateful backing services the app depends on.
+# Application containers (frontend/backend) are built from docker/*.Dockerfile
+# for production; in dev they run on the host via `pnpm dev`.
+#
+#   docker compose up -d        # start postgres, redis, meilisearch
+#   docker compose down         # stop and remove containers
+#   docker compose down -v      # also remove data volumes
+
+name: fworld
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fworld-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fworld
+      POSTGRES_PASSWORD: fworld
+      POSTGRES_DB: fworld
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U fworld -d fworld']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: fworld-redis
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    container_name: fworld-meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_ENV: development
+      MEILI_MASTER_KEY: masterKey
+    ports:
+      - '7700:7700'
+    volumes:
+      - meilisearch-data:/meili_data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:7700/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+  redis-data:
+  meilisearch-data:

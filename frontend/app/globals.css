@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+
+/*
+ * FWorld design tokens.
+ * These CSS custom properties are the single source of truth for theming and
+ * are consumed by Tailwind utilities and shadcn/ui components. Real brand
+ * values are defined in docs/006_DESIGN_SYSTEM.md and wired in during the
+ * design-system phase.
+ */
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(240 10% 4%);
+  --color-brand: hsl(240 6% 10%);
+  --radius: 0.625rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}

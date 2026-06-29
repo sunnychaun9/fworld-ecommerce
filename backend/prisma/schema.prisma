@@ -1,0 +1,13 @@
+// FWorld Prisma schema.
+// Data models are defined in later phases per docs/004_DATABASE.md.
+// Conventions (see TRD §8): UUID v7 primary keys, soft delete (deletedAt),
+// and audit fields (createdAt / updatedAt) on every model.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

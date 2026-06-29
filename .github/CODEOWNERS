@@ -1,0 +1,10 @@
+# FWorld code ownership. Each line grants review authority over matching paths.
+# Replace the placeholder teams with real GitHub handles/teams before launch.
+
+*                   @fworld/engineering
+
+/frontend/          @fworld/frontend
+/backend/           @fworld/backend
+/docker/            @fworld/platform
+/.github/           @fworld/platform
+/docs/              @fworld/engineering
