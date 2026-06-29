@@ -4,7 +4,7 @@
 # Build context is the repository root: `docker build -f docker/frontend.Dockerfile .`
 # ---------------------------------------------------------------------------
 
-FROM node:22-alpine AS base
+FROM node:26-alpine AS base
 RUN corepack enable
 WORKDIR /app
 
@@ -25,7 +25,7 @@ COPY . .
 RUN pnpm --filter @fworld/frontend build
 
 # ---- Runtime ------------------------------------------------------------- #
-FROM node:22-alpine AS runner
+FROM node:26-alpine AS runner
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app
