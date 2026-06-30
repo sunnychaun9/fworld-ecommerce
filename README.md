@@ -108,7 +108,13 @@ deployment, analytics, and roadmap.
 Architecture decisions are recorded as ADRs in
 [`docs/adr/`](./docs/adr/) — start with the
 [ADR index](./docs/adr/ADR-0000-INDEX.md). System diagrams live in
-[`architecture/`](./architecture).
+[`architecture/`](./architecture). The design-token foundation is specified in
+[`docs/design-foundation/`](./docs/design-foundation/), the business-capability
+model in [`docs/business-architecture/`](./docs/business-architecture/), the
+database blueprint in [`docs/database-blueprint/`](./docs/database-blueprint/),
+the API & backend contract in [`docs/api-architecture/`](./docs/api-architecture/),
+and the authentication design review in
+[`docs/auth-architecture/`](./docs/auth-architecture/).
 
 ## License
 
