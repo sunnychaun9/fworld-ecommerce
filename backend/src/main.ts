@@ -1,36 +1,25 @@
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import helmet from 'helmet';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
+import { configureApp } from './app.setup';
 
 /**
- * Application bootstrap. Wires cross-cutting infrastructure (security headers,
- * CORS, global validation, versioned route prefix, graceful shutdown).
- * Business modules are registered in AppModule in later phases.
+ * Application bootstrap. The request pipeline (including the Better Auth handler
+ * mounting and body-parser ordering) is configured by `configureApp` so it is
+ * shared with the integration tests. Nest's built-in body parser is disabled so
+ * the Better Auth handler receives the unparsed request stream.
  */
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+    bodyParser: false,
+  });
   const config = app.get(ConfigService);
 
-  app.use(helmet());
-  app.enableCors({
-    origin: config.get<string>('corsOrigin', 'http://localhost:3000'),
-    credentials: true,
-  });
-  app.setGlobalPrefix(config.get<string>('apiPrefix', 'api/v1'), {
-    // Health probes stay at the root for load balancers / orchestrators.
-    exclude: ['health', 'health/ready'],
-  });
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  );
+  configureApp(app, config);
   app.enableShutdownHooks();
 
   const port = config.get<number>('port', 4000);

@@ -16,4 +16,13 @@ export default () => ({
     ttl: Number(process.env.RATE_LIMIT_TTL ?? 60_000),
     limit: Number(process.env.RATE_LIMIT_LIMIT ?? 100),
   },
+  auth: {
+    secret: process.env.BETTER_AUTH_SECRET ?? 'dev-better-auth-secret-change-me',
+    baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:4000',
+    // Origins allowed to use cookie sessions (CSRF/origin validation).
+    trustedOrigins: (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter((origin) => origin.length > 0),
+  },
 });

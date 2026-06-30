@@ -1,7 +1,9 @@
 // FWorld Prisma schema.
-// Data models are defined in later phases per docs/004_DATABASE.md.
-// Conventions (see TRD §8): UUID v7 primary keys, soft delete (deletedAt),
-// and audit fields (createdAt / updatedAt) on every model.
+// Milestone 2.1 — Better Auth foundation. Better Auth owns identity:
+// User, Session, Account, Verification (auth-architecture/10, Q10).
+// Conventions (CTO): snake_case columns/tables via @map/@@map; UUID v7 PKs
+// generated at the application layer (newId()); PostgreSQL UUID columns.
+// Other domain models are added in later sprints per docs/database-blueprint.
 
 generator client {
   provider = "prisma-client-js"
@@ -10,4 +12,80 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Better Auth core identity (owned by Better Auth, extended by FWorld)
+// Prisma field names are camelCase (Better Auth contract); DB columns are
+// snake_case via @map. Ids are app-generated UUID v7 stored as native uuid.
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String    @id @db.Uuid
+  name          String?   @db.VarChar(120)
+  email         String    @unique @db.VarChar(255)
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?   @map("avatar") // Better Auth `image` ↔ approved `avatar` column
+  // FWorld extensions (approved fields)
+  role          String    @default("CUSTOMER") @db.VarChar(32)
+  status        String    @default("ACTIVE") @db.VarChar(32)
+  phone         String?   @db.VarChar(20)
+  phoneVerified Boolean   @default(false) @map("phone_verified")
+  lastLogin     DateTime? @map("last_login") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  sessions Session[]
+  accounts Account[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  token     String   @unique @db.VarChar(255)
+  ipAddress String?  @map("ip_address") @db.VarChar(64)
+  userAgent String?  @map("user_agent") @db.Text
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @db.Uuid
+  accountId             String    @map("account_id") @db.VarChar(255)
+  providerId            String    @map("provider_id") @db.VarChar(64)
+  userId                String    @map("user_id") @db.Uuid
+  accessToken           String?   @map("access_token") @db.Text
+  refreshToken          String?   @map("refresh_token") @db.Text
+  idToken               String?   @map("id_token") @db.Text
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") @db.Timestamptz(6)
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") @db.Timestamptz(6)
+  scope                 String?   @db.Text
+  password              String?   @db.Text // credential password lives here, NOT on User
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @db.Uuid
+  identifier String   @db.VarChar(255)
+  value      String   @db.Text
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([identifier])
+  @@map("verifications")
 }

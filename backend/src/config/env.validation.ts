@@ -16,6 +16,9 @@ export const envSchema = z.object({
   DATABASE_URL: z.string().min(1).optional(),
   RATE_LIMIT_TTL: z.coerce.number().int().positive().default(60_000),
   RATE_LIMIT_LIMIT: z.coerce.number().int().positive().default(100),
+  // Better Auth (Milestone 2.1). The secret MUST be overridden in production.
+  BETTER_AUTH_SECRET: z.string().min(1).default('dev-better-auth-secret-change-me'),
+  BETTER_AUTH_URL: z.string().min(1).default('http://localhost:4000'),
 });
 
 export type Env = z.infer<typeof envSchema>;
