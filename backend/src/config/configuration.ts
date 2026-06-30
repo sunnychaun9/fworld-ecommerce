@@ -1,6 +1,8 @@
 /**
  * Typed configuration factory consumed by `@nestjs/config`.
- * Values are read from environment variables (see root `.env.example`).
+ * Values are read from environment variables validated by `env.validation.ts`.
+ * Integration-specific config (payments, shipping, storage, search) is added in
+ * the sprint that introduces it.
  */
 export default () => ({
   nodeEnv: process.env.NODE_ENV ?? 'development',
@@ -10,11 +12,8 @@ export default () => ({
   database: {
     url: process.env.DATABASE_URL ?? '',
   },
-  redis: {
-    url: process.env.REDIS_URL ?? '',
-  },
-  meilisearch: {
-    host: process.env.MEILISEARCH_HOST ?? '',
-    masterKey: process.env.MEILISEARCH_MASTER_KEY ?? '',
+  rateLimit: {
+    ttl: Number(process.env.RATE_LIMIT_TTL ?? 60_000),
+    limit: Number(process.env.RATE_LIMIT_LIMIT ?? 100),
   },
 });

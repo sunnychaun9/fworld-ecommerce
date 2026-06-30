@@ -19,7 +19,10 @@ async function bootstrap(): Promise<void> {
     origin: config.get<string>('corsOrigin', 'http://localhost:3000'),
     credentials: true,
   });
-  app.setGlobalPrefix(config.get<string>('apiPrefix', 'api/v1'));
+  app.setGlobalPrefix(config.get<string>('apiPrefix', 'api/v1'), {
+    // Health probes stay at the root for load balancers / orchestrators.
+    exclude: ['health', 'health/ready'],
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
