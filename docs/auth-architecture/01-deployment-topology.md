@@ -45,8 +45,13 @@ authentication authority**.
 ## Consequences of Option B
 
 - `/api/v1/auth/*` (the `005` auth surface) is served by the Better Auth handler
-  within NestJS; FWorld-specific endpoints (`/auth/me`, `/auth/profile`) wrap or
-  extend it.
+  within NestJS.
+- **Route ownership boundary (frozen):** **Better Auth owns identity endpoints**
+  (`/api/v1/auth/*`); **FWorld owns business endpoints**. Application controllers
+  are **never** mounted inside Better Auth's route space. The authenticated
+  **application user** is a FWorld concept and lives at **`GET /me`**
+  (`/api/v1/me`), not `/auth/me`. Better Auth's raw session remains
+  `GET /api/v1/auth/get-session`.
 - NestJS **auth guard** resolves the Better Auth session → principal
   (`userId, role, isGuest`) for every protected route
   ([api-architecture/05](../api-architecture/05-auth-flows-highlevel.md)).

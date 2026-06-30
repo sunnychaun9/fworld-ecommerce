@@ -54,7 +54,8 @@ See [`docs/003_TRD.md`](./docs/003_TRD.md) for the full technical architecture.
 
 ## Prerequisites
 
-- **Node.js** ≥ 20 (22 recommended — see [`.nvmrc`](./.nvmrc))
+- **Node.js** ≥ 22.12 (required — the backend loads ESM-only `better-auth` via
+  `require(ESM)`, stable since Node 22.12; see [`.nvmrc`](./.nvmrc))
 - **pnpm** ≥ 9 (`corepack enable`)
 - **Docker** (for local PostgreSQL / Redis / Meilisearch)
 

@@ -51,8 +51,9 @@ machine-to-machine** only (D1) and never placed in the browser.
 ## 4. What the browser stores
 
 - **Only the cookie.** No access token, no refresh token, no user object in
-  `localStorage`. The frontend learns identity by calling `GET /auth/me` (or the
-  Better Auth client's session hook), which reads the cookie server-side.
+  `localStorage`. The frontend learns identity by calling `GET /me`
+  (`/api/v1/me`, the FWorld application-user endpoint) or the Better Auth client's
+  session hook, which reads the cookie server-side.
 
 > **CTO decision (Q2): APPROVED** — DB-backed sessions + the cookie attribute
 > table above (`SameSite=Lax`, enabled by the same-site domain strategy in

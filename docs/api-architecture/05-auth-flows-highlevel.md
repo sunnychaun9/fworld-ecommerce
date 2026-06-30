@@ -36,14 +36,21 @@ Client ──▶ [Auth boundary: Better Auth] ──▶ session established
 ### Endpoint surface (from `005`, contract only)
 
 ```text
+# Identity — Better Auth, /api/v1/auth/*
 POST /auth/register   POST /auth/login    POST /auth/logout
 POST /auth/otp/send   POST /auth/otp/verify
 POST /auth/google     POST /auth/apple
-GET  /auth/me         PUT  /auth/profile
+
+# Application user — FWorld, outside /auth/*
+GET  /me              PUT  /me
 ```
 
-> Whether these are served by NestJS controllers or proxied to a Better Auth
-> handler is an Auth-Design-Review decision (API-1).
+> **Route ownership boundary.** **Better Auth owns identity endpoints**
+> (`/api/v1/auth/*`); **FWorld owns business endpoints**. Application controllers
+> must **never** be mounted inside Better Auth's route space. The authenticated
+> application user therefore lives at **`GET /me`** (not `/auth/me`) — it
+> represents the app user, not the identity provider. Better Auth's raw session is
+> `GET /api/v1/auth/get-session`.
 
 ## 2. Authorization — flow shape (high level)
 
