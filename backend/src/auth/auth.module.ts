@@ -6,7 +6,7 @@ import { PrismaService } from '../database/prisma.service';
 import { AuthStatusController } from './auth-status.controller';
 import { AuthGuard } from './auth.guard';
 import { BETTER_AUTH } from './auth.constants';
-import { createAuth, type Auth } from './auth.factory';
+import { createAuth, type Auth, type CreateAuthOptions } from './auth.factory';
 import { MeController } from './me.controller';
 
 /**
@@ -31,9 +31,14 @@ import { MeController } from './me.controller';
           baseURL: config.getOrThrow<string>('auth.baseURL'),
           trustedOrigins: config.get<string[]>('auth.trustedOrigins') ?? [],
           useSecureCookies: config.get<string>('nodeEnv') === 'production',
+          cookieDomain: config.get<string>('auth.cookieDomain'),
+          google: config.get<CreateAuthOptions['google']>('auth.google'),
+          rateLimit: config.getOrThrow<CreateAuthOptions['rateLimit']>('auth.rateLimit'),
           // Abstracted delivery — real transport (Resend) is a later milestone.
-          sendVerificationEmail: ({ email, url }) => {
-            logger.log(`Verification email for ${email}: ${url}`);
+          // Never log the verification URL/token (token-in-logs); log the
+          // dispatch event only.
+          sendVerificationEmail: ({ email }) => {
+            logger.log(`Dispatched verification email to ${email}`);
           },
         });
       },

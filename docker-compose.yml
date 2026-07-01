@@ -1,3 +1,4 @@
+# C:\Users\ADMIN\Desktop\mobileenv\fworld-ecommerce\docker-compose.yml
 # Local development infrastructure for FWorld.
 # Brings up the stateful backing services the app depends on.
 # Application containers (frontend/backend) are built from docker/*.Dockerfile
