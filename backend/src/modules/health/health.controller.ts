@@ -1,4 +1,5 @@
 import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 
 import { Public } from '../../auth/decorators/public.decorator';
 import { PrismaService } from '../../database/prisma.service';
@@ -8,7 +9,11 @@ import { PrismaService } from '../../database/prisma.service';
  * global API prefix).
  * - `GET /health`        liveness (process is up)
  * - `GET /health/ready`  readiness (dependencies reachable)
+ *
+ * `@SkipThrottle()`: orchestrator/load-balancer probes are frequent and often
+ * share a source IP, so they must not be rate-limited into false-unhealthy 429s.
  */
+@SkipThrottle()
 @Controller('health')
 export class HealthController {
   constructor(private readonly prisma: PrismaService) {}

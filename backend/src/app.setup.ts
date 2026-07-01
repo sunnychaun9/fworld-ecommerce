@@ -25,7 +25,7 @@ export function configureApp(app: NestExpressApplication, config: ConfigService)
 
   app.use(helmet());
   app.enableCors({
-    origin: config.get<string>('corsOrigin', 'http://localhost:3000'),
+    origin: config.get<string[]>('corsOrigins') ?? ['http://localhost:3000'],
     credentials: true,
   });
 

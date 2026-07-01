@@ -10,11 +10,20 @@ export default () => {
   const nodeEnv = process.env.NODE_ENV ?? 'development';
   const isProduction = nodeEnv === 'production';
 
+  // Allowed browser origins, parsed once. `CORS_ORIGIN` may be a comma-separated
+  // list (e.g. apex + www in production); split so both the CORS layer and Better
+  // Auth's trustedOrigins receive an array — a single joined string would match
+  // no origin at the CORS layer.
+  const corsOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+
   return {
     nodeEnv,
     port: Number(process.env.PORT ?? 4000),
     apiPrefix: process.env.API_PREFIX ?? 'api/v1',
-    corsOrigin: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+    corsOrigins,
     database: {
       url: process.env.DATABASE_URL ?? '',
     },
@@ -28,10 +37,8 @@ export default () => {
       secret: process.env.BETTER_AUTH_SECRET ?? (isProduction ? '' : DEV_AUTH_SECRET),
       baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:4000',
       // Origins allowed to use cookie sessions (CSRF/origin validation).
-      trustedOrigins: (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
-        .split(',')
-        .map((origin) => origin.trim())
-        .filter((origin) => origin.length > 0),
+      // Same source as the CORS layer above (single parse).
+      trustedOrigins: corsOrigins,
       // Cross-subdomain cookie domain (prod only; e.g. ".fworld.com").
       cookieDomain: process.env.COOKIE_DOMAIN ?? undefined,
       // Google OAuth — enabled only when both credentials are present.
