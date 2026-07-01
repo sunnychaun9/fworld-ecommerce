@@ -10,7 +10,12 @@ import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './database/prisma.module';
+import { BrandsModule } from './modules/brands/brands.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import { HealthModule } from './modules/health/health.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { ProductsModule } from './modules/products/products.module';
+import { VariantsModule } from './modules/variants/variants.module';
 
 /**
  * Root application module.
@@ -34,6 +39,11 @@ import { HealthModule } from './modules/health/health.module';
     PrismaModule,
     HealthModule,
     AuthModule,
+    CategoriesModule,
+    BrandsModule,
+    ProductsModule,
+    VariantsModule,
+    InventoryModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
