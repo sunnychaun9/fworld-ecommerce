@@ -14,6 +14,7 @@ import { AddressesModule } from './modules/addresses/addresses.module';
 import { AdminInventoryModule } from './modules/admin-inventory/admin-inventory.module';
 import { AdminOrdersModule } from './modules/admin-orders/admin-orders.module';
 import { AdminProductsModule } from './modules/admin-products/admin-products.module';
+import { AuditModule } from './modules/audit/audit.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { CartModule } from './modules/cart/cart.module';
 import { CategoriesModule } from './modules/categories/categories.module';
@@ -25,12 +26,14 @@ import { HealthModule } from './modules/health/health.module';
 import { ImportExportModule } from './modules/import-export/import-export.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { MediaModule } from './modules/media/media.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { ProductsModule } from './modules/products/products.module';
 import { RecentlyViewedModule } from './modules/recently-viewed/recently-viewed.module';
 import { RecommendationsModule } from './modules/recommendations/recommendations.module';
+import { ReturnsModule } from './modules/returns/returns.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { ShippingModule } from './modules/shipping/shipping.module';
 import { StorefrontModule } from './modules/storefront/storefront.module';
@@ -82,6 +85,9 @@ import { VariantsModule } from './modules/variants/variants.module';
     AdminProductsModule,
     AdminInventoryModule,
     ImportExportModule,
+    ReturnsModule,
+    NotificationsModule,
+    AuditModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
