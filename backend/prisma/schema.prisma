@@ -125,14 +125,17 @@ model Category {
 // ---------------------------------------------------------------------------
 
 model Brand {
-  id          String   @id @db.Uuid
-  name        String   @db.VarChar(120)
-  slug        String   @unique @db.VarChar(140)
-  logo        String?  @db.Text
-  description String?  @db.Text
-  status      String   @default("ACTIVE") @db.VarChar(16)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id             String   @id @db.Uuid
+  name           String   @db.VarChar(120)
+  slug           String   @unique @db.VarChar(140)
+  logo           String?  @db.Text
+  description    String?  @db.Text
+  website        String?  @db.VarChar(255)
+  status         String   @default("ACTIVE") @db.VarChar(16)
+  seoTitle       String?  @map("seo_title") @db.VarChar(180)
+  seoDescription String?  @map("seo_description") @db.VarChar(320)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   products Product[]
 
