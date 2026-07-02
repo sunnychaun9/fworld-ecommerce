@@ -59,6 +59,15 @@ export const envSchema = z
     RAZORPAY_KEY_SECRET: optionalString(),
     // Razorpay webhook secret (Milestone 4.5). Optional.
     RAZORPAY_WEBHOOK_SECRET: optionalString(),
+
+    // Redis / cache / search / jobs (Milestone 6.1–6.3). All optional; absent
+    // values preserve current startup behavior (cache falls back to the DB).
+    REDIS_HOST: optionalString(),
+    REDIS_PORT: z.coerce.number().int().positive().optional(),
+    REDIS_PASSWORD: optionalString(),
+    CACHE_ENABLED: z.enum(['true', 'false']).optional(),
+    SEARCH_PROVIDER: z.enum(['postgres']).default('postgres'),
+    JOBS_ENABLED: z.enum(['true', 'false']).default('true'),
   })
   .superRefine((env, ctx) => {
     // Google credentials must be provided together (any environment).

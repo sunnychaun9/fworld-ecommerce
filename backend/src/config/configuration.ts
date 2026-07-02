@@ -71,5 +71,24 @@ export default () => {
             }
           : undefined,
     },
+    // Redis-backed cache. Active only when a Redis host is configured and caching
+    // is not explicitly disabled; otherwise the cache service is a no-op and
+    // callers fall back to the database transparently.
+    cache: {
+      enabled: Boolean(process.env.REDIS_HOST) && process.env.CACHE_ENABLED !== 'false',
+      redis: process.env.REDIS_HOST
+        ? {
+            host: process.env.REDIS_HOST,
+            port: Number(process.env.REDIS_PORT ?? 6379),
+            password: process.env.REDIS_PASSWORD ?? undefined,
+          }
+        : undefined,
+    },
+    search: {
+      provider: process.env.SEARCH_PROVIDER ?? 'postgres',
+    },
+    jobs: {
+      enabled: process.env.JOBS_ENABLED !== 'false',
+    },
   };
 };
