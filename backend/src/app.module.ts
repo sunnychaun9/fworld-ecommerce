@@ -24,6 +24,9 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { ProductsModule } from './modules/products/products.module';
+import { RecentlyViewedModule } from './modules/recently-viewed/recently-viewed.module';
+import { RecommendationsModule } from './modules/recommendations/recommendations.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
 import { StorefrontModule } from './modules/storefront/storefront.module';
 import { VariantsModule } from './modules/variants/variants.module';
 
@@ -64,6 +67,9 @@ import { VariantsModule } from './modules/variants/variants.module';
     AddressesModule,
     WishlistModule,
     CouponsModule,
+    ReviewsModule,
+    RecentlyViewedModule,
+    RecommendationsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
