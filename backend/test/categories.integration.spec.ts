@@ -78,11 +78,20 @@ describe.skipIf(!RUN)('Categories (integration — requires PostgreSQL)', () => 
     expect(bySlug.body.data.id).toBe(child.body.data.id);
   });
 
-  it('rejects a duplicate slug (409 SLUG_TAKEN)', async () => {
+  it('rejects a duplicate explicit slug (409 SLUG_TAKEN)', async () => {
     await admin.post('/api/v1/categories').send({ name: 'Jeans', slug: 'jeans' });
     const dup = await admin.post('/api/v1/categories').send({ name: 'Jeans 2', slug: 'jeans' });
     expect(dup.status).toBe(409);
     expect(dup.body.errors[0].code).toBe('SLUG_TAKEN');
+  });
+
+  it('auto-suffixes duplicate generated slugs (shirts, shirts-2, shirts-3)', async () => {
+    const a = await admin.post('/api/v1/categories').send({ name: 'Shirts' });
+    const b = await admin.post('/api/v1/categories').send({ name: 'Shirts' });
+    const c = await admin.post('/api/v1/categories').send({ name: 'Shirts' });
+    expect(a.body.data.slug).toBe('shirts');
+    expect(b.body.data.slug).toBe('shirts-2');
+    expect(c.body.data.slug).toBe('shirts-3');
   });
 
   it('prevents a category cycle (422 CATEGORY_CYCLE)', async () => {
