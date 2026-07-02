@@ -53,6 +53,12 @@ export const envSchema = z
     // when both are set. Must be provided together.
     GOOGLE_CLIENT_ID: optionalString(),
     GOOGLE_CLIENT_SECRET: optionalString(),
+
+    // Razorpay (Milestone 4.4). Optional — enabled only when both are set.
+    RAZORPAY_KEY_ID: optionalString(),
+    RAZORPAY_KEY_SECRET: optionalString(),
+    // Razorpay webhook secret (Milestone 4.5). Optional.
+    RAZORPAY_WEBHOOK_SECRET: optionalString(),
   })
   .superRefine((env, ctx) => {
     // Google credentials must be provided together (any environment).
@@ -61,6 +67,15 @@ export const envSchema = z
         code: z.ZodIssueCode.custom,
         path: ['GOOGLE_CLIENT_ID'],
         message: 'GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set together',
+      });
+    }
+
+    // Razorpay credentials must be provided together (any environment).
+    if (Boolean(env.RAZORPAY_KEY_ID) !== Boolean(env.RAZORPAY_KEY_SECRET)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['RAZORPAY_KEY_ID'],
+        message: 'RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set together',
       });
     }
 

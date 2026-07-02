@@ -61,6 +61,17 @@ describe('validateEnv', () => {
     expect(env.GOOGLE_CLIENT_SECRET).toBe('secret');
   });
 
+  it('rejects partial Razorpay credentials (one without the other)', () => {
+    expect(() => validateEnv({ RAZORPAY_KEY_ID: 'id-only' })).toThrow(/RAZORPAY_KEY/);
+    expect(() => validateEnv({ RAZORPAY_KEY_SECRET: 'secret-only' })).toThrow(/RAZORPAY_KEY/);
+  });
+
+  it('accepts both Razorpay credentials together', () => {
+    const env = validateEnv({ RAZORPAY_KEY_ID: 'rzp_id', RAZORPAY_KEY_SECRET: 'rzp_secret' });
+    expect(env.RAZORPAY_KEY_ID).toBe('rzp_id');
+    expect(env.RAZORPAY_KEY_SECRET).toBe('rzp_secret');
+  });
+
   it('treats empty-string optional vars as unset (blank .env template values)', () => {
     // Mirrors the .env.example template which ships these blank, e.g. `COOKIE_DOMAIN=`.
     const env = validateEnv({

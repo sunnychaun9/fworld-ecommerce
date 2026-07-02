@@ -60,5 +60,16 @@ export default () => {
         sensitiveMax: Number(process.env.AUTH_RATE_LIMIT_SENSITIVE_MAX ?? 20),
       },
     },
+    payments: {
+      // Razorpay — configured only when both credentials are present.
+      razorpay:
+        process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET
+          ? {
+              keyId: process.env.RAZORPAY_KEY_ID,
+              keySecret: process.env.RAZORPAY_KEY_SECRET,
+              webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET ?? undefined,
+            }
+          : undefined,
+    },
   };
 };
