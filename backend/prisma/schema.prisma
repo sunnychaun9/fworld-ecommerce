@@ -201,11 +201,12 @@ model ProductVariant {
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  product   Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
-  images     ProductImage[]
-  inventory  Inventory?
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  product          Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  images           ProductImage[]
+  inventory        Inventory?
+  cartItems        CartItem[]
+  orderItems       OrderItem[]
+  stockAdjustments StockAdjustment[]
 
   @@unique([productId, size, color])
   @@index([productId])
@@ -554,4 +555,24 @@ model OrderStatusHistory {
 
   @@index([orderId])
   @@map("order_status_history")
+}
+
+// ---------------------------------------------------------------------------
+// Admin catalog ops — Stock adjustment audit log (Milestone 5.4–5.6).
+// adjustedBy holds the admin user id (scalar; no relation to the auth User).
+// ---------------------------------------------------------------------------
+
+model StockAdjustment {
+  id               String   @id @db.Uuid
+  variantId        String   @map("variant_id") @db.Uuid
+  reason           String   @db.VarChar(255)
+  previousQuantity Int      @map("previous_quantity")
+  newQuantity      Int      @map("new_quantity")
+  adjustedBy       String   @map("adjusted_by") @db.Uuid
+  createdAt        DateTime @default(now()) @map("adjusted_at") @db.Timestamptz(6)
+
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId])
+  @@map("stock_adjustments")
 }
