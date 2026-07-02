@@ -35,10 +35,13 @@ model User {
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  sessions Session[]
-  accounts Account[]
-  carts    Cart[]
-  orders   Order[]
+  sessions     Session[]
+  accounts     Account[]
+  carts        Cart[]
+  orders       Order[]
+  addresses    Address[]
+  wishlist     Wishlist[]
+  couponUsages CouponUsage[]
 
   @@map("users")
 }
@@ -174,6 +177,7 @@ model Product {
   variants    ProductVariant[]
   images      ProductImage[]
   collections CollectionProduct[]
+  wishlist    Wishlist[]
 
   @@index([categoryId])
   @@index([brandId])
@@ -392,4 +396,82 @@ model Payment {
 
   @@index([orderId, status])
   @@map("payments")
+}
+
+// ---------------------------------------------------------------------------
+// Customer profile — Addresses, Wishlist, Coupons (Milestone 4.6–4.8).
+// ---------------------------------------------------------------------------
+
+model Address {
+  id           String   @id @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  fullName     String   @map("full_name") @db.VarChar(120)
+  phone        String   @db.VarChar(20)
+  addressLine1 String   @map("address_line1") @db.VarChar(180)
+  addressLine2 String?  @map("address_line2") @db.VarChar(180)
+  city         String   @db.VarChar(80)
+  state        String   @db.VarChar(80)
+  postalCode   String   @map("postal_code") @db.VarChar(12)
+  country      String   @default("India") @db.VarChar(80)
+  isDefault    Boolean  @default(false) @map("is_default")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
+}
+
+model Wishlist {
+  id        String   @id @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@map("wishlist")
+}
+
+enum CouponType {
+  PERCENTAGE
+  FLAT
+}
+
+model Coupon {
+  id             String     @id @db.Uuid
+  code           String     @unique @db.VarChar(40)
+  description    String?    @db.Text
+  discountType   CouponType @map("discount_type")
+  discountValue  Decimal    @map("discount_value") @db.Decimal(12, 2)
+  minOrderAmount Decimal?   @map("min_order_amount") @db.Decimal(12, 2)
+  maxDiscount    Decimal?   @map("max_discount") @db.Decimal(12, 2)
+  usageLimit     Int?       @map("usage_limit")
+  perUserLimit   Int?       @map("per_user_limit")
+  validFrom      DateTime?  @map("valid_from") @db.Timestamptz(6)
+  validTo        DateTime?  @map("valid_to") @db.Timestamptz(6)
+  active         Boolean    @default(true)
+  createdAt      DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  usages CouponUsage[]
+
+  @@map("coupons")
+}
+
+model CouponUsage {
+  id        String   @id @db.Uuid
+  couponId  String   @map("coupon_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([couponId, userId])
+  @@map("coupon_usages")
 }
