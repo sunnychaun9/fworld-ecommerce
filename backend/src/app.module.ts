@@ -16,6 +16,7 @@ import { AdminOrdersModule } from './modules/admin-orders/admin-orders.module';
 import { AdminProductsModule } from './modules/admin-products/admin-products.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { BrandsModule } from './modules/brands/brands.module';
+import { CacheModule } from './modules/cache/cache.module';
 import { CartModule } from './modules/cart/cart.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CheckoutModule } from './modules/checkout/checkout.module';
@@ -25,6 +26,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HealthModule } from './modules/health/health.module';
 import { ImportExportModule } from './modules/import-export/import-export.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
+import { JobsModule } from './modules/jobs/jobs.module';
 import { MediaModule } from './modules/media/media.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -35,6 +37,7 @@ import { RecentlyViewedModule } from './modules/recently-viewed/recently-viewed.
 import { RecommendationsModule } from './modules/recommendations/recommendations.module';
 import { ReturnsModule } from './modules/returns/returns.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SearchModule } from './modules/search/search.module';
 import { ShippingModule } from './modules/shipping/shipping.module';
 import { StorefrontModule } from './modules/storefront/storefront.module';
 import { VariantsModule } from './modules/variants/variants.module';
@@ -88,6 +91,9 @@ import { VariantsModule } from './modules/variants/variants.module';
     ReturnsModule,
     NotificationsModule,
     AuditModule,
+    CacheModule,
+    SearchModule,
+    JobsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
