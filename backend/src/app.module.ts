@@ -11,12 +11,14 @@ import configuration from './config/configuration';
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './database/prisma.module';
 import { AddressesModule } from './modules/addresses/addresses.module';
+import { AdminOrdersModule } from './modules/admin-orders/admin-orders.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { CartModule } from './modules/cart/cart.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CheckoutModule } from './modules/checkout/checkout.module';
 import { CollectionsModule } from './modules/collections/collections.module';
 import { CouponsModule } from './modules/coupons/coupons.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HealthModule } from './modules/health/health.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { MediaModule } from './modules/media/media.module';
@@ -27,6 +29,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { RecentlyViewedModule } from './modules/recently-viewed/recently-viewed.module';
 import { RecommendationsModule } from './modules/recommendations/recommendations.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { ShippingModule } from './modules/shipping/shipping.module';
 import { StorefrontModule } from './modules/storefront/storefront.module';
 import { VariantsModule } from './modules/variants/variants.module';
 
@@ -70,6 +73,9 @@ import { VariantsModule } from './modules/variants/variants.module';
     ReviewsModule,
     RecentlyViewedModule,
     RecommendationsModule,
+    AdminOrdersModule,
+    ShippingModule,
+    DashboardModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
