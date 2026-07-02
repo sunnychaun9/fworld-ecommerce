@@ -21,6 +21,7 @@ export default () => {
 
   return {
     nodeEnv,
+    version: process.env.npm_package_version ?? '0.1.0',
     port: Number(process.env.PORT ?? 4000),
     apiPrefix: process.env.API_PREFIX ?? 'api/v1',
     corsOrigins,

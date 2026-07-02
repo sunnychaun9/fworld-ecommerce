@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
@@ -9,6 +9,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 import { validateEnv } from './config/env.validation';
+import { buildThrottlerOptions } from './config/throttler.config';
 import { PrismaModule } from './database/prisma.module';
 import { AddressesModule } from './modules/addresses/addresses.module';
 import { AdminInventoryModule } from './modules/admin-inventory/admin-inventory.module';
@@ -59,8 +60,11 @@ import { VariantsModule } from './modules/variants/variants.module';
       validate: validateEnv,
       load: [configuration],
     }),
-    // Global rate limiting (TRD §14 / 005_API.md: 100 req/min default).
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
+    // Global rate limiting (configurable via RATE_LIMIT_TTL / RATE_LIMIT_LIMIT).
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: buildThrottlerOptions,
+    }),
     PrismaModule,
     HealthModule,
     AuthModule,
