@@ -1,0 +1,74 @@
+# FWorld production stack: backend + PostgreSQL + Redis.
+#   docker compose -f docker-compose.production.yml --env-file .env.production up -d
+#
+# Run migrations once against a fresh database (prisma CLI ships in the image):
+#   docker compose -f docker-compose.production.yml run --rm backend \
+#     node node_modules/prisma/build/index.js migrate deploy
+
+name: fworld-prod
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fworld}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-fworld}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-fworld} -d ${POSTGRES_DB:-fworld}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command:
+      [
+        'redis-server',
+        '--appendonly',
+        'yes',
+        '--requirepass',
+        '${REDIS_PASSWORD:?set REDIS_PASSWORD}',
+      ]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD}', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: fworld-backend:prod
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: '4000'
+      DATABASE_URL: postgresql://${POSTGRES_USER:-fworld}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-fworld}?schema=public
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      CACHE_ENABLED: 'true'
+      SEARCH_PROVIDER: postgres
+      JOBS_ENABLED: 'true'
+    ports:
+      - '${BACKEND_PORT:-4000}:4000'
+
+volumes:
+  postgres-data:
+  redis-data:

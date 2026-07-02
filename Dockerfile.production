@@ -1,0 +1,52 @@
+# syntax=docker/dockerfile:1
+# ---------------------------------------------------------------------------
+# FWorld backend (NestJS) — production image.
+# Build context is the repository root:
+#   docker build -f Dockerfile.production -t fworld-backend:prod .
+# ---------------------------------------------------------------------------
+
+FROM node:22-alpine AS base
+RUN corepack enable && apk add --no-cache openssl libc6-compat
+WORKDIR /app
+
+# ---- Dependencies -------------------------------------------------------- #
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY backend/package.json ./backend/
+# The backend's postinstall runs `prisma generate`, so the schema must be present.
+COPY backend/prisma ./backend/prisma
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm install --filter @fworld/backend... --frozen-lockfile
+
+# ---- Build --------------------------------------------------------------- #
+FROM base AS build
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/backend/node_modules ./backend/node_modules
+COPY . .
+# Generate the Prisma client (musl engine) into the pnpm store, then compile.
+RUN pnpm --filter @fworld/backend exec prisma generate
+RUN pnpm --filter @fworld/backend build
+# Drop dev dependencies from the store in place, keeping pnpm's layout intact.
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm --filter @fworld/backend prune --prod || true
+RUN pnpm --filter @fworld/backend exec prisma generate
+
+# ---- Runtime ------------------------------------------------------------- #
+# The pnpm workspace layout (relative symlinks from backend/node_modules into the
+# root .pnpm store) is preserved by copying both node_modules trees to the same
+# absolute paths; the Prisma client resolves through the store.
+FROM base AS runner
+ENV NODE_ENV=production
+WORKDIR /app/backend
+RUN addgroup -S nodejs && adduser -S nestjs -G nodejs
+COPY --from=build --chown=nestjs:nodejs /app/node_modules /app/node_modules
+COPY --from=build --chown=nestjs:nodejs /app/backend/node_modules ./node_modules
+COPY --from=build --chown=nestjs:nodejs /app/backend/dist ./dist
+COPY --from=build --chown=nestjs:nodejs /app/backend/prisma ./prisma
+COPY --from=build --chown=nestjs:nodejs /app/backend/package.json ./package.json
+USER nestjs
+EXPOSE 4000
+# Liveness probe used by orchestrators / compose.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:4000/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node", "dist/main.js"]
