@@ -11,7 +11,9 @@ import configuration from './config/configuration';
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './database/prisma.module';
 import { AddressesModule } from './modules/addresses/addresses.module';
+import { AdminInventoryModule } from './modules/admin-inventory/admin-inventory.module';
 import { AdminOrdersModule } from './modules/admin-orders/admin-orders.module';
+import { AdminProductsModule } from './modules/admin-products/admin-products.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { CartModule } from './modules/cart/cart.module';
 import { CategoriesModule } from './modules/categories/categories.module';
@@ -20,6 +22,7 @@ import { CollectionsModule } from './modules/collections/collections.module';
 import { CouponsModule } from './modules/coupons/coupons.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HealthModule } from './modules/health/health.module';
+import { ImportExportModule } from './modules/import-export/import-export.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { MediaModule } from './modules/media/media.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -76,6 +79,9 @@ import { VariantsModule } from './modules/variants/variants.module';
     AdminOrdersModule,
     ShippingModule,
     DashboardModule,
+    AdminProductsModule,
+    AdminInventoryModule,
+    ImportExportModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
