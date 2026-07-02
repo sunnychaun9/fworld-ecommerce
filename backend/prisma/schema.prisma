@@ -320,6 +320,9 @@ model CartItem {
 enum OrderStatus {
   PENDING
   CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
   CANCELLED
   COMPLETED
 }
@@ -345,9 +348,11 @@ model Order {
   createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items    OrderItem[]
-  payments Payment[]
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+  payments      Payment[]
+  shipment      Shipment?
+  statusHistory OrderStatusHistory[]
 
   @@index([userId, createdAt])
   @@map("orders")
@@ -515,4 +520,38 @@ model RecentlyViewed {
   @@unique([userId, productId])
   @@index([userId, viewedAt])
   @@map("recently_viewed")
+}
+
+// ---------------------------------------------------------------------------
+// Operations — Shipment & Order status history (Milestone 5.1–5.3).
+// ---------------------------------------------------------------------------
+
+model Shipment {
+  id                String    @id @db.Uuid
+  orderId           String    @unique @map("order_id") @db.Uuid
+  courier           String    @db.VarChar(120)
+  trackingNumber    String    @unique @map("tracking_number") @db.VarChar(120)
+  trackingUrl       String?   @map("tracking_url") @db.Text
+  estimatedDelivery DateTime? @map("estimated_delivery") @db.Timestamptz(6)
+  shippedAt         DateTime? @map("shipped_at") @db.Timestamptz(6)
+  deliveredAt       DateTime? @map("delivered_at") @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("shipments")
+}
+
+model OrderStatusHistory {
+  id        String      @id @db.Uuid
+  orderId   String      @map("order_id") @db.Uuid
+  status    OrderStatus
+  note      String?     @db.VarChar(255)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_status_history")
 }
