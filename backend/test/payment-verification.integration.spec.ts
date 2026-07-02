@@ -48,7 +48,8 @@ describe.skipIf(!RUN)('Payment verification & webhooks (integration)', () => {
   let agent: ReturnType<typeof request.agent>;
   let userId: string;
 
-  async function seed(providerOrderId: string): Promise<Scenario> {
+  async function seed(): Promise<Scenario> {
+    const providerOrderId = `order_${newId()}`;
     const categoryId = newId();
     await prisma.category.create({
       data: { id: categoryId, name: 'VerCat', slug: `ver-cat-${newId()}` },
@@ -149,12 +150,12 @@ describe.skipIf(!RUN)('Payment verification & webhooks (integration)', () => {
   });
 
   it('verifies a valid signature: marks PAID, confirms order, releases reservation (idempotent)', async () => {
-    const s = await seed('order_ok');
+    const s = await seed();
     const res = await agent.post('/api/v1/payments/verify').send({
       paymentId: s.paymentId,
-      razorpayOrderId: 'order_ok',
+      razorpayOrderId: s.providerOrderId,
       razorpayPaymentId: 'rzp_ok',
-      razorpaySignature: paymentSignature('order_ok', 'rzp_ok'),
+      razorpaySignature: paymentSignature(s.providerOrderId, 'rzp_ok'),
     });
     expect(res.status).toBe(201);
     expect(res.body.data.status).toBe('PAID');
@@ -169,9 +170,9 @@ describe.skipIf(!RUN)('Payment verification & webhooks (integration)', () => {
     // Duplicate verification is idempotent (no further inventory change).
     const again = await agent.post('/api/v1/payments/verify').send({
       paymentId: s.paymentId,
-      razorpayOrderId: 'order_ok',
+      razorpayOrderId: s.providerOrderId,
       razorpayPaymentId: 'rzp_ok',
-      razorpaySignature: paymentSignature('order_ok', 'rzp_ok'),
+      razorpaySignature: paymentSignature(s.providerOrderId, 'rzp_ok'),
     });
     expect(again.body.data.status).toBe('PAID');
     inv = await prisma.inventory.findUnique({ where: { variantId: s.variantId } });
@@ -180,10 +181,10 @@ describe.skipIf(!RUN)('Payment verification & webhooks (integration)', () => {
   });
 
   it('rejects an invalid signature (422) and leaves the payment PENDING', async () => {
-    const s = await seed('order_bad');
+    const s = await seed();
     const res = await agent.post('/api/v1/payments/verify').send({
       paymentId: s.paymentId,
-      razorpayOrderId: 'order_bad',
+      razorpayOrderId: s.providerOrderId,
       razorpayPaymentId: 'rzp_bad',
       razorpaySignature: 'invalid',
     });
@@ -194,10 +195,10 @@ describe.skipIf(!RUN)('Payment verification & webhooks (integration)', () => {
   });
 
   it('handles payment.failed webhook: FAILED, order PENDING, inventory restored', async () => {
-    const s = await seed('order_fail');
+    const s = await seed();
     const res = await postWebhook({
       event: 'payment.failed',
-      payload: { payment: { entity: { id: 'rzp_fail', order_id: 'order_fail' } } },
+      payload: { payment: { entity: { id: 'rzp_fail', order_id: s.providerOrderId } } },
     });
     expect(res.status).toBe(201);
     const order = await prisma.order.findUnique({ where: { id: s.orderId } });
@@ -209,10 +210,10 @@ describe.skipIf(!RUN)('Payment verification & webhooks (integration)', () => {
   });
 
   it('handles payment.captured webhook idempotently (duplicate delivery safe)', async () => {
-    const s = await seed('order_cap');
+    const s = await seed();
     const event = {
       event: 'payment.captured',
-      payload: { payment: { entity: { id: 'rzp_cap', order_id: 'order_cap' } } },
+      payload: { payment: { entity: { id: 'rzp_cap', order_id: s.providerOrderId } } },
     };
     expect((await postWebhook(event)).status).toBe(201);
     let inv = await prisma.inventory.findUnique({ where: { variantId: s.variantId } });
