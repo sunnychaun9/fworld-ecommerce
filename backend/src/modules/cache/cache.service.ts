@@ -18,6 +18,18 @@ export class CacheService implements OnModuleDestroy {
     return this.client !== null;
   }
 
+  /** Liveness probe for the Redis connection (false when disabled or unreachable). */
+  async ping(): Promise<boolean> {
+    if (!this.client) {
+      return false;
+    }
+    try {
+      return (await this.client.ping()) === 'PONG';
+    } catch {
+      return false;
+    }
+  }
+
   async get<T>(key: string): Promise<T | null> {
     if (!this.client) {
       return null;
