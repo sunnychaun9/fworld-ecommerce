@@ -39,9 +39,11 @@ model User {
   accounts     Account[]
   carts        Cart[]
   orders       Order[]
-  addresses    Address[]
-  wishlist     Wishlist[]
-  couponUsages CouponUsage[]
+  addresses      Address[]
+  wishlist       Wishlist[]
+  couponUsages   CouponUsage[]
+  reviews        Review[]
+  recentlyViewed RecentlyViewed[]
 
   @@map("users")
 }
@@ -174,10 +176,12 @@ model Product {
 
   category    Category            @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   brand       Brand?              @relation(fields: [brandId], references: [id], onDelete: SetNull)
-  variants    ProductVariant[]
-  images      ProductImage[]
-  collections CollectionProduct[]
-  wishlist    Wishlist[]
+  variants       ProductVariant[]
+  images         ProductImage[]
+  collections    CollectionProduct[]
+  wishlist       Wishlist[]
+  reviews        Review[]
+  recentlyViewed RecentlyViewed[]
 
   @@index([categoryId])
   @@index([brandId])
@@ -474,4 +478,41 @@ model CouponUsage {
 
   @@index([couponId, userId])
   @@map("coupon_usages")
+}
+
+// ---------------------------------------------------------------------------
+// Reviews & Recently Viewed (Milestone 4.9–4.11). Review aggregates are
+// computed in queries (no denormalized columns on Product).
+// ---------------------------------------------------------------------------
+
+model Review {
+  id        String   @id @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  rating    Int
+  title     String?  @db.VarChar(160)
+  comment   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([productId])
+  @@map("reviews")
+}
+
+model RecentlyViewed {
+  id        String   @id @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  viewedAt  DateTime @default(now()) @map("viewed_at") @db.Timestamptz(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId, viewedAt])
+  @@map("recently_viewed")
 }
