@@ -2,8 +2,12 @@ import { ValidationPipe } from '@nestjs/common';
 import type { ConfigService } from '@nestjs/config';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { toNodeHandler } from 'better-auth/node';
+import compression from 'compression';
 import express from 'express';
 import helmet from 'helmet';
+
+/** Maximum accepted request body size. */
+const BODY_LIMIT = '1mb';
 
 import { BETTER_AUTH } from './auth/auth.constants';
 import type { Auth } from './auth/auth.factory';
@@ -23,7 +27,9 @@ import type { Auth } from './auth/auth.factory';
 export function configureApp(app: NestExpressApplication, config: ConfigService): void {
   const expressApp = app.getHttpAdapter().getInstance();
 
+  // Secure headers, response compression, and CORS run before every route.
   app.use(helmet());
+  app.use(compression());
   app.enableCors({
     origin: config.get<string[]>('corsOrigins') ?? ['http://localhost:3000'],
     credentials: true,
@@ -32,17 +38,19 @@ export function configureApp(app: NestExpressApplication, config: ConfigService)
   const auth = app.get<Auth>(BETTER_AUTH);
   expressApp.use('/api/v1/auth', toNodeHandler(auth));
 
+  // Request size limits guard against oversized-payload abuse.
   expressApp.use(
     express.json({
+      limit: BODY_LIMIT,
       verify: (req, _res, buf) => {
         (req as express.Request & { rawBody?: Buffer }).rawBody = buf;
       },
     }),
   );
-  expressApp.use(express.urlencoded({ extended: true }));
+  expressApp.use(express.urlencoded({ extended: true, limit: BODY_LIMIT }));
 
   app.setGlobalPrefix(config.get<string>('apiPrefix', 'api/v1'), {
-    exclude: ['health', 'health/ready'],
+    exclude: ['health', 'health/live', 'health/ready'],
   });
   app.useGlobalPipes(
     new ValidationPipe({
