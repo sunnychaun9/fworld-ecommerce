@@ -11,10 +11,17 @@ import configuration from './config/configuration';
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './database/prisma.module';
 import { BrandsModule } from './modules/brands/brands.module';
+import { CartModule } from './modules/cart/cart.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { CheckoutModule } from './modules/checkout/checkout.module';
+import { CollectionsModule } from './modules/collections/collections.module';
 import { HealthModule } from './modules/health/health.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
+import { MediaModule } from './modules/media/media.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import { ProductsModule } from './modules/products/products.module';
+import { StorefrontModule } from './modules/storefront/storefront.module';
 import { VariantsModule } from './modules/variants/variants.module';
 
 /**
@@ -44,6 +51,13 @@ import { VariantsModule } from './modules/variants/variants.module';
     ProductsModule,
     VariantsModule,
     InventoryModule,
+    MediaModule,
+    CollectionsModule,
+    StorefrontModule,
+    CartModule,
+    CheckoutModule,
+    OrdersModule,
+    PaymentsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
