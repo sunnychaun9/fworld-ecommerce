@@ -183,6 +183,7 @@ model ProductVariant {
   productId     String   @map("product_id") @db.Uuid
   size          String?  @db.VarChar(24)
   color         String?  @db.VarChar(40)
+  colorHex      String?  @map("color_hex") @db.VarChar(9)
   sku           String   @unique @db.VarChar(64)
   barcode       String?  @unique @db.VarChar(64)
   priceOverride Decimal? @map("price_override") @db.Decimal(12, 2)
