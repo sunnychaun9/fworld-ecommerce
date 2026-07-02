@@ -576,3 +576,72 @@ model StockAdjustment {
   @@index([variantId])
   @@map("stock_adjustments")
 }
+
+// ---------------------------------------------------------------------------
+// Returns, Notifications & Audit (Milestone 5.7–5.9). New models use scalar
+// foreign keys (no relations) so the frozen User/Order/OrderItem models are
+// untouched; referential validation is enforced in the services/repositories.
+// ---------------------------------------------------------------------------
+
+enum ReturnStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  RECEIVED
+  REFUNDED
+}
+
+enum NotificationType {
+  ORDER
+  PAYMENT
+  SHIPPING
+  RETURN
+  PROMOTION
+  SYSTEM
+}
+
+model Return {
+  id             String       @id @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  orderId        String       @map("order_id") @db.Uuid
+  orderItemId    String       @unique @map("order_item_id") @db.Uuid
+  status         ReturnStatus @default(REQUESTED)
+  reason         String       @db.VarChar(500)
+  refundAmount   Decimal      @map("refund_amount") @db.Decimal(12, 2)
+  decisionReason String?      @map("decision_reason") @db.VarChar(500)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([userId])
+  @@index([orderId])
+  @@map("returns")
+}
+
+model Notification {
+  id        String           @id @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  title     String           @db.VarChar(180)
+  message   String           @db.Text
+  data      Json?
+  readAt    DateTime?        @map("read_at") @db.Timestamptz(6)
+  deletedAt DateTime?        @map("deleted_at") @db.Timestamptz(6)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id        String   @id @db.Uuid
+  actorId   String?  @map("actor_id") @db.Uuid
+  action    String   @db.VarChar(64)
+  entity    String   @db.VarChar(64)
+  entityId  String?  @map("entity_id") @db.VarChar(64)
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
