@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { useUiStore } from '@/store/ui.store';
 import { cn } from '@/lib/utils';
 
-import { CartButton } from './cart-button';
+import { HeaderCart } from '@/components/cart/header-cart';
+
 import { DesktopNav } from './desktop-nav';
 import { Logo } from './logo';
 import { MobileNav } from './mobile-nav';
@@ -73,7 +74,7 @@ function Header(): React.ReactElement {
         <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
           <SearchTrigger />
           <WishlistButton className="hidden sm:inline-flex" />
-          <CartButton />
+          <HeaderCart />
           <ProfileMenu className="hidden lg:inline-flex" />
         </div>
       </Container>
