@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { Search } from 'lucide-react';
+import { Suspense } from 'react';
 
-import { EmptyState } from '@/components/common/empty-state';
+import { SearchView } from '@/components/catalog/search-view';
+import { Container } from '@/components/common/container';
+import { Loading } from '@/components/common/loading';
 import { PageHeader } from '@/components/layout/page-header';
-import { Section } from '@/components/layout/section';
-import { ROUTES } from '@/constants/routes';
 import { buildMetadata } from '@/config/seo';
+import { ROUTES } from '@/constants/routes';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Search',
@@ -20,15 +21,15 @@ export default function SearchPage(): React.ReactElement {
       <PageHeader
         eyebrow="Find"
         title="Search"
-        description="Search products, collections and brands."
+        description="Search products, brands and categories."
       />
-      <Section>
-        <EmptyState
-          icon={<Search />}
-          title="Start a search"
-          description="Press ⌘K (Ctrl K on Windows) or tap the search icon in the header. Full search connects in a later phase."
-        />
-      </Section>
+      <section className="py-10 sm:py-14">
+        <Container>
+          <Suspense fallback={<Loading />}>
+            <SearchView />
+          </Suspense>
+        </Container>
+      </section>
     </>
   );
 }

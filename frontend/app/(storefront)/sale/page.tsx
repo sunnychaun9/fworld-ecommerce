@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
-import { Percent } from 'lucide-react';
 
-import { EmptyState } from '@/components/common/empty-state';
+import { SaleListing } from '@/components/catalog/sale-listing';
+import { Container } from '@/components/common/container';
 import { PageHeader } from '@/components/layout/page-header';
-import { Section } from '@/components/layout/section';
-import { ROUTES } from '@/constants/routes';
 import { buildMetadata } from '@/config/seo';
+import { ROUTES } from '@/constants/routes';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Sale',
@@ -21,13 +20,11 @@ export default function SalePage(): React.ReactElement {
         title="Sale"
         description="Seasonal markdowns on selected essentials."
       />
-      <Section>
-        <EmptyState
-          icon={<Percent />}
-          title="Sale coming soon"
-          description="Reduced products will appear here once the catalog is built."
-        />
-      </Section>
+      <section className="py-10 sm:py-14">
+        <Container>
+          <SaleListing />
+        </Container>
+      </section>
     </>
   );
 }

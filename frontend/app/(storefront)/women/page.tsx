@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
-import { Shirt } from 'lucide-react';
+import { Suspense } from 'react';
 
-import { EmptyState } from '@/components/common/empty-state';
+import { ServerProductListing } from '@/components/catalog/server-product-listing';
+import { Container } from '@/components/common/container';
+import { Loading } from '@/components/common/loading';
 import { PageHeader } from '@/components/layout/page-header';
-import { Section } from '@/components/layout/section';
-import { ROUTES } from '@/constants/routes';
 import { buildMetadata } from '@/config/seo';
+import { ROUTES } from '@/constants/routes';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Women',
-  description: 'Womenswear — refined silhouettes and modern staples from FWorld.',
+  description: 'Shop womenswear — refined silhouettes and modern staples from FWorld.',
   path: ROUTES.women,
 });
 
@@ -21,13 +22,13 @@ export default function WomenPage(): React.ReactElement {
         title="Women"
         description="Refined silhouettes and modern staples for every day."
       />
-      <Section>
-        <EmptyState
-          icon={<Shirt />}
-          title="Catalog coming soon"
-          description="Women's products will appear here once the catalog experience is built."
-        />
-      </Section>
+      <section className="py-10 sm:py-14">
+        <Container>
+          <Suspense fallback={<Loading />}>
+            <ServerProductListing categorySlug="women" />
+          </Suspense>
+        </Container>
+      </section>
     </>
   );
 }
