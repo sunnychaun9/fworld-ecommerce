@@ -22,4 +22,7 @@ export const queryKeys = {
   cart: () => ['cart'] as const,
   wishlist: () => ['wishlist'] as const,
   reviews: (productId: string) => ['reviews', productId] as const,
+  checkout: () => ['checkout'] as const,
+  addresses: () => ['addresses'] as const,
+  order: (id: string) => ['order', id] as const,
 } as const;

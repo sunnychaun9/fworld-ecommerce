@@ -1,0 +1,1 @@
+export { prepareCheckout } from './checkout';

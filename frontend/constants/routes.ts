@@ -13,6 +13,14 @@ export const ROUTES = {
   brands: '/brands',
   sale: '/sale',
   search: '/search',
+  cart: '/cart',
+  checkout: '/checkout',
+  login: '/login',
+  register: '/register',
+  orders: '/orders',
+  paymentFailed: '/order/payment-failed',
+  /** Order confirmation page for a given order id. */
+  orderSuccess: (id: string) => `/order/success/${id}`,
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
