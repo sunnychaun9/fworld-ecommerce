@@ -7,4 +7,7 @@ export const queryKeys = {
   auth: {
     session: () => ['auth', 'session'] as const,
   },
+  store: {
+    home: () => ['store', 'home'] as const,
+  },
 } as const;

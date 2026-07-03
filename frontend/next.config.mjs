@@ -22,6 +22,11 @@ const nextConfig = {
       // Cloudflare R2 / CDN-served assets. Tighten hostnames before production.
       { protocol: 'https', hostname: '**.r2.dev' },
       { protocol: 'https', hostname: '**.cloudflarestorage.com' },
+      // Storefront product/collection imagery is served from arbitrary CDNs and
+      // the local API in dev. Broadly allow https here; the media component
+      // degrades gracefully when an image is missing or fails to load.
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http', hostname: 'localhost' },
     ],
   },
 };

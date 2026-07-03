@@ -104,3 +104,19 @@ export const organizationJsonLd = {
   url: seoConfig.url,
   description: seoConfig.description,
 } as const;
+
+/** WebSite JSON-LD with a SearchAction pointing at the storefront search route. */
+export const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: seoConfig.name,
+  url: seoConfig.url,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${seoConfig.url}/search?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
+} as const;
