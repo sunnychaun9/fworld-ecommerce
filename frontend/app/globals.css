@@ -1,32 +1,151 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
 
 /*
- * FWorld design tokens.
- * These CSS custom properties are the single source of truth for theming and
- * are consumed by Tailwind utilities and shadcn/ui components. Real brand
- * values are defined in docs/006_DESIGN_SYSTEM.md and wired in during the
- * design-system phase.
+ * FWorld design system.
+ *
+ * Aesthetic: premium, minimal, fashion-first. A monochrome black/white/neutral
+ * foundation with a single warm accent (`--brand`, terracotta). Tokens are the
+ * single source of truth for both Tailwind utilities and shadcn/ui primitives.
+ *
+ * Colours are authored in OKLCH for perceptually-even light/dark pairs. Dark
+ * mode is class-based (next-themes → `.dark` on <html>).
  */
-@theme {
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(240 10% 4%);
-  --color-brand: hsl(240 6% 10%);
-  --radius: 0.625rem;
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Typography — Inter (UI) + Fraunces (editorial display), self-hosted via next/font. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* Semantic colours (mapped to the runtime variables below). */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Radius scale — deliberately small and elegant. */
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  /* Wider container ceiling for ultrawide displays. */
+  --breakpoint-3xl: 120rem;
 }
 
 :root {
-  color-scheme: light;
+  /* Small radius keeps the look architectural rather than bubbly. */
+  --radius: 0.25rem;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.16 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0 0);
+  --primary: oklch(0.16 0 0);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.16 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.52 0 0);
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.16 0 0);
+  --brand: oklch(0.56 0.11 44);
+  --brand-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.58 0.22 27);
+  --destructive-foreground: oklch(0.98 0 0);
+  --success: oklch(0.55 0.11 150);
+  --success-foreground: oklch(0.98 0 0);
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.16 0 0);
+}
+
+.dark {
+  --background: oklch(0.15 0 0);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.18 0 0);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.18 0 0);
+  --popover-foreground: oklch(0.97 0 0);
+  --primary: oklch(0.97 0 0);
+  --primary-foreground: oklch(0.16 0 0);
+  --secondary: oklch(0.25 0 0);
+  --secondary-foreground: oklch(0.97 0 0);
+  --muted: oklch(0.25 0 0);
+  --muted-foreground: oklch(0.68 0 0);
+  --accent: oklch(0.27 0 0);
+  --accent-foreground: oklch(0.97 0 0);
+  --brand: oklch(0.66 0.12 46);
+  --brand-foreground: oklch(0.16 0 0);
+  --destructive: oklch(0.68 0.19 24);
+  --destructive-foreground: oklch(0.98 0 0);
+  --success: oklch(0.68 0.13 152);
+  --success-foreground: oklch(0.16 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.7 0 0);
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+
+  /* Fallback focus ring for keyboard users. Interactive primitives override this
+     with their own `focus-visible:ring-*` styles (and `outline-none`). */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    @apply bg-foreground/90 text-background;
+  }
+}
+
+/* Honour reduced-motion preferences: keep motion functional, never decorative. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -1,10 +1,19 @@
 /**
- * features.ts — placeholder (no implementation).
- *
- * Intended home for client-side feature flags (typed toggles gating optional
- * UI/behaviour). A formal feature-flag strategy is an open decision pending an
- * ADR (see research/ARCHITECTURE_AUDIT_2026-06-29.md §13).
- *
- * Implementation is deferred to a later phase. Repository foundation only.
+ * Client-side feature flags — typed, build-time toggles that gate optional UI or
+ * behaviour. Kept intentionally simple; a remote-config strategy can replace the
+ * source of these values later without changing call sites.
  */
-export {};
+export const featureFlags = {
+  wishlist: true,
+  reviews: true,
+  recentlyViewed: true,
+  recommendations: true,
+  coupons: true,
+  darkMode: true,
+} as const;
+
+export type FeatureFlag = keyof typeof featureFlags;
+
+export function isFeatureEnabled(flag: FeatureFlag): boolean {
+  return featureFlags[flag];
+}
