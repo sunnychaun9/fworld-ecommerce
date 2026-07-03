@@ -3,7 +3,6 @@
 import { LogIn, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
-import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
@@ -116,12 +115,8 @@ function CartView(): React.ReactElement {
             <span>Total</span>
             <span className="tabular-nums">{formatCurrency(data.subtotal)}</span>
           </div>
-          <Button
-            className="mt-6 w-full"
-            size="lg"
-            onClick={() => toast('Checkout is coming soon.')}
-          >
-            Checkout
+          <Button asChild className="mt-6 w-full" size="lg">
+            <Link href={ROUTES.checkout}>Checkout</Link>
           </Button>
           <Button asChild variant="ghost" className="mt-2 w-full">
             <Link href={ROUTES.men}>Continue shopping</Link>
