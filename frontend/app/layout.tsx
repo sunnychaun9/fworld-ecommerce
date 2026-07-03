@@ -26,11 +26,7 @@ export default function RootLayout({
       <body className="bg-background text-foreground min-h-dvh font-sans antialiased">
         <AppProviders>
           <SkipLink />
-          <div className="flex min-h-dvh flex-col">
-            <main id="main-content" className="flex-1">
-              {children}
-            </main>
-          </div>
+          {children}
         </AppProviders>
       </body>
     </html>
