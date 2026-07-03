@@ -1,6 +1,6 @@
 'use client';
 
-import { LogIn, LogOut, Package, User, UserPlus } from 'lucide-react';
+import { Heart, LayoutGrid, LogIn, LogOut, MapPin, Package, User, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ROUTES } from '@/constants/routes';
 import { useCurrentUser } from '@/features/auth/use-auth';
 import { authClient } from '@/services/auth';
 
@@ -50,9 +51,29 @@ function ProfileMenu({ className }: { className?: string }): React.ReactElement 
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem disabled>
-                <Package />
-                Orders
+              <DropdownMenuItem asChild>
+                <Link href={ROUTES.account}>
+                  <LayoutGrid />
+                  Account
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={ROUTES.accountOrders}>
+                  <Package />
+                  Orders
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={ROUTES.accountWishlist}>
+                  <Heart />
+                  Wishlist
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={ROUTES.accountAddresses}>
+                  <MapPin />
+                  Addresses
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
