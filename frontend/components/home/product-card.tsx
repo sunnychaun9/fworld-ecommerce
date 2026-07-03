@@ -1,6 +1,7 @@
 'use client';
 
 import { Eye, Heart, Star } from 'lucide-react';
+import Link from 'next/link';
 import * as React from 'react';
 
 import { MediaImage } from '@/components/common/media-image';
@@ -46,7 +47,7 @@ function ProductCard({
   const alt = primary?.altText ?? product.name;
 
   return (
-    <article className={cn('group flex flex-col', className)}>
+    <article className={cn('group relative flex flex-col', className)}>
       <div className="bg-muted relative aspect-[3/4] w-full overflow-hidden rounded-md">
         <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.03]">
           <MediaImage src={primary?.url} alt={alt} sizes={sizes} priority={priority} />
@@ -70,12 +71,12 @@ function ProductCard({
             wished ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`
           }
           onClick={() => setWished((v) => !v)}
-          className="bg-background/80 text-foreground hover:bg-background focus-visible:ring-ring absolute right-3 top-3 inline-flex size-9 items-center justify-center rounded-full opacity-0 outline-none backdrop-blur transition-opacity duration-200 focus-visible:opacity-100 focus-visible:ring-2 group-hover:opacity-100 max-sm:opacity-100"
+          className="bg-background/80 text-foreground hover:bg-background focus-visible:ring-ring absolute right-3 top-3 z-20 inline-flex size-9 items-center justify-center rounded-full opacity-0 outline-none backdrop-blur transition-opacity duration-200 focus-visible:opacity-100 focus-visible:ring-2 group-hover:opacity-100 max-sm:opacity-100"
         >
           <Heart className={cn('size-4', wished && 'fill-brand text-brand')} />
         </button>
 
-        <div className="absolute inset-x-3 bottom-3 translate-y-2 opacity-0 transition-all duration-300 ease-out group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 max-sm:translate-y-0 max-sm:opacity-100">
+        <div className="absolute inset-x-3 bottom-3 z-20 translate-y-2 opacity-0 transition-all duration-300 ease-out group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 max-sm:translate-y-0 max-sm:opacity-100">
           <button
             type="button"
             aria-label={`Quick view ${product.name}`}
@@ -102,6 +103,12 @@ function ProductCard({
           className="mt-0.5"
         />
       </div>
+
+      <Link
+        href={`/product/${product.slug}`}
+        aria-label={product.name}
+        className="focus-visible:ring-ring focus-visible:ring-offset-background absolute inset-0 z-10 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+      />
     </article>
   );
 }
