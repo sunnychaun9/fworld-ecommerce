@@ -1,34 +1,35 @@
-import Link from 'next/link';
+import type { Metadata } from 'next';
 
-import { Container } from '@/components/common/container';
-import { Button } from '@/components/ui/button';
-import { ROUTES } from '@/constants/routes';
+import { BrandStory } from '@/components/home/brand-story';
+import { CategoryGrid } from '@/components/home/category-grid';
+import { Hero } from '@/components/home/hero';
+import { HomeSections } from '@/components/home/home-sections';
+import { NewsletterSection } from '@/components/home/newsletter-section';
+import { buildMetadata, organizationJsonLd, websiteJsonLd } from '@/config/seo';
+
+export const metadata: Metadata = buildMetadata({ path: '/' });
 
 /**
- * Storefront home — placeholder hero inside the completed shell. The real
- * merchandising home (hero media, product rails) is built in a later phase.
+ * Storefront homepage. Static sections (hero, categories, brand story,
+ * newsletter) are Server Components; the data-driven middle (`HomeSections`)
+ * is a client island that consumes `GET /store/home` via TanStack Query.
  */
 export default function HomePage(): React.ReactElement {
   return (
-    <Container className="flex min-h-[70dvh] flex-col items-center justify-center gap-8 py-20 text-center">
-      <span className="text-muted-foreground text-xs font-medium uppercase tracking-[0.3em]">
-        Autumn / Winter 2026
-      </span>
-      <h1 className="font-display text-foreground max-w-4xl text-balance text-5xl font-medium tracking-tight sm:text-6xl lg:text-7xl">
-        Considered essentials for the modern wardrobe
-      </h1>
-      <p className="text-muted-foreground max-w-md text-balance text-sm leading-relaxed sm:text-base">
-        The application shell is ready — navigation, search and footer are wired. Product
-        experiences arrive in the next phases.
-      </p>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <Button asChild size="lg">
-          <Link href={ROUTES.men}>Shop Men</Link>
-        </Button>
-        <Button asChild size="lg" variant="outline">
-          <Link href={ROUTES.women}>Shop Women</Link>
-        </Button>
-      </div>
-    </Container>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
+      <Hero />
+      <CategoryGrid />
+      <HomeSections />
+      <BrandStory />
+      <NewsletterSection />
+    </>
   );
 }
