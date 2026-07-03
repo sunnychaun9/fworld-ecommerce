@@ -18,6 +18,32 @@ export function formatCurrency(
   }).format(safe);
 }
 
+/** Format an ISO date as a readable day, e.g. "3 Jul 2026". Invalid input → ''. */
+export function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString(appConfig.locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+/** Format an ISO date with the time of day, e.g. "3 Jul 2026, 2:30 pm". */
+export function formatDateTime(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleString(appConfig.locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
 /** Compute a whole-number discount percentage from a price and its (higher) compare-at. */
 export function discountPercent(price: number | string, compareAt: number | string): number {
   const p = Number(price);

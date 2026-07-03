@@ -16,3 +16,13 @@ export interface ProductReviews {
   totalReviews: number;
   reviews: Review[];
 }
+
+/** `GET /reviews/my` item — the user's own review, without an embedded user. */
+export type MyReview = Omit<Review, 'user'>;
+
+/** Body for `PATCH /reviews/:id`. */
+export interface UpdateReviewInput {
+  rating?: number;
+  title?: string;
+  comment?: string;
+}

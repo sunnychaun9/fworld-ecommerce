@@ -1,3 +1,5 @@
+import type { PageInfo } from './catalog';
+
 /** An immutable line-item snapshot on an order. Money fields are decimal strings. */
 export interface OrderItem {
   id: string;
@@ -60,4 +62,10 @@ export interface OrderShippingInput {
 /** Body for `POST /orders`. Items come from the server-side cart, not this payload. */
 export interface CreateOrderInput {
   shippingAddress: OrderShippingInput;
+}
+
+/** `GET /orders` — a page of the user's orders. */
+export interface OrderListResult {
+  items: Order[];
+  pageInfo: PageInfo;
 }

@@ -25,4 +25,10 @@ export const queryKeys = {
   checkout: () => ['checkout'] as const,
   addresses: () => ['addresses'] as const,
   order: (id: string) => ['order', id] as const,
+  orders: (params: Record<string, unknown>) => ['orders', params] as const,
+  orderTracking: (id: string) => ['order', id, 'tracking'] as const,
+  notifications: () => ['notifications'] as const,
+  returns: () => ['returns'] as const,
+  returnDetail: (id: string) => ['return', id] as const,
+  myReviews: () => ['reviews', 'my'] as const,
 } as const;

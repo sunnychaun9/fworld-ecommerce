@@ -1,1 +1,8 @@
-export { createReview, fetchProductReviews, type CreateReviewInput } from './reviews';
+export {
+  createReview,
+  deleteReview,
+  fetchMyReviews,
+  fetchProductReviews,
+  updateReview,
+  type CreateReviewInput,
+} from './reviews';

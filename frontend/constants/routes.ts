@@ -21,6 +21,14 @@ export const ROUTES = {
   paymentFailed: '/order/payment-failed',
   /** Order confirmation page for a given order id. */
   orderSuccess: (id: string) => `/order/success/${id}`,
+  account: '/account',
+  accountProfile: '/account/profile',
+  accountOrders: '/account/orders',
+  accountOrder: (id: string) => `/account/orders/${id}`,
+  accountAddresses: '/account/addresses',
+  accountWishlist: '/account/wishlist',
+  accountReviews: '/account/reviews',
+  accountNotifications: '/account/notifications',
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
