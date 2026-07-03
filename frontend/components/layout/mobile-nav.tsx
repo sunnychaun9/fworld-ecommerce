@@ -6,7 +6,7 @@ import Link from 'next/link';
 import * as React from 'react';
 
 import { ThemeToggle } from '@/components/common/theme-toggle';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Sheet,
   SheetClose,
@@ -84,14 +84,14 @@ function MobileNav({ className }: { className?: string }): React.ReactElement {
         <div className="border-border mt-auto flex items-center justify-between gap-3 border-t px-5 py-4">
           <div className="flex items-center gap-1">
             <SheetClose asChild>
-              <Button variant="outline" size="sm">
+              <Link href="/login" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
                 Sign in
-              </Button>
+              </Link>
             </SheetClose>
             <SheetClose asChild>
-              <Button variant="ghost" size="sm">
+              <Link href="/register" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
                 Register
-              </Button>
+              </Link>
             </SheetClose>
           </div>
           <ThemeToggle />

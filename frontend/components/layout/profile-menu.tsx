@@ -1,8 +1,11 @@
 'use client';
 
-import { LogIn, Package, Settings, User, UserPlus } from 'lucide-react';
+import { LogIn, LogOut, Package, User, UserPlus } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,13 +15,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { useCurrentUser } from '@/features/auth/use-auth';
+import { authClient } from '@/services/auth';
 
-/**
- * Account menu. Structure and affordances only — the individual entries are
- * placeholders until auth and account pages are built in a later phase.
- */
+/** Account menu. Reflects the current session: sign-in/register when signed out,
+ * account actions and sign-out when signed in. */
 function ProfileMenu({ className }: { className?: string }): React.ReactElement {
+  const user = useCurrentUser();
+  const router = useRouter();
+
+  async function signOut(): Promise<void> {
+    await authClient.signOut();
+    router.refresh();
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,28 +43,43 @@ function ProfileMenu({ className }: { className?: string }): React.ReactElement 
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>Account</DropdownMenuLabel>
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <LogIn />
-            Sign in
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <UserPlus />
-            Create account
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Package />
-            Orders
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings />
-            Settings
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        {user ? (
+          <>
+            <DropdownMenuLabel className="truncate">
+              {user.name ?? user.email ?? 'Account'}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem disabled>
+                <Package />
+                Orders
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => void signOut()}>
+              <LogOut />
+              Sign out
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <>
+            <DropdownMenuLabel>Account</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <Link href="/login">
+                  <LogIn />
+                  Sign in
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/register">
+                  <UserPlus />
+                  Create account
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
