@@ -4,7 +4,7 @@
 # Build context is the repository root: `docker build -f docker/backend.Dockerfile .`
 # ---------------------------------------------------------------------------
 
-FROM node:22-alpine AS base
+FROM node:26-alpine AS base
 RUN corepack enable
 WORKDIR /app
 
@@ -25,7 +25,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm --filter @fworld/backend deploy --prod /app/deploy
 
 # ---- Runtime ------------------------------------------------------------- #
-FROM node:22-alpine AS runner
+FROM node:26-alpine AS runner
 ENV NODE_ENV=production
 WORKDIR /app
 RUN addgroup -S nodejs && adduser -S nestjs -G nodejs
